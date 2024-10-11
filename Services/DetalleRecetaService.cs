@@ -49,6 +49,7 @@ namespace reportesApi.Services
                         Id = int.Parse(dataRow["Id"].ToString()),
                         IdReceta = int.Parse(dataRow["IdReceta"].ToString()),
                         Insumo = dataRow["Insumo"].ToString(),
+                        Descripcioninsumo = dataRow["Descripcioninsumo"].ToString(),
                         Cantidad = int.Parse(dataRow["Cantidad"].ToString()),
                         UsuarioRegistra = dataRow["UsuarioRegistra"].ToString(),
                     }).ToList();
