@@ -111,7 +111,7 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-        [HttpDelete("DeleteOrdenCompra")]
+        [HttpDelete("DeleteOrdenCompra/{id}")]
         public IActionResult DeleteOrdenCompra([FromRoute] int id )
         {
             var objectResponse = Helper.GetStructResponse();
