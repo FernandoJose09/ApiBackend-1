@@ -43,7 +43,7 @@ namespace reportesApi.Controllers
         }
 
 
-        [HttpPost("Insert OrdenCompra")]
+        [HttpPost("InsertOrdenCompra")]
         public IActionResult InsertOrdenCompra([FromBody] InsertOrdenCompraModel req )
         {
             var objectResponse = Helper.GetStructResponse();
@@ -63,7 +63,7 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-        [HttpGet("Get OrdenCompra")]
+        [HttpGet("GetOrdenCompra")]
         public IActionResult GetOrdenCompra()
         {
             var objectResponse = Helper.GetStructResponse();
@@ -89,7 +89,7 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-        [HttpPut("Update OrdenCompra")]
+        [HttpPut("UpdateOrdenCompra")]
         public IActionResult UpdateOrdenCompra([FromBody] UpdateOrdenCompraModel req )
         {
             var objectResponse = Helper.GetStructResponse();
@@ -111,7 +111,7 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-        [HttpDelete("Delete OrdenCompra/{id}")]
+        [HttpDelete("DeleteOrdenCompra")]
         public IActionResult DeleteOrdenCompra([FromRoute] int id )
         {
             var objectResponse = Helper.GetStructResponse();

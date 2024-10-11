@@ -43,7 +43,7 @@ namespace reportesApi.Controllers
         }
 
 
-        [HttpPost("Insert DetalleReceta")]
+        [HttpPost("InsertDetalleReceta")]
         public IActionResult InsertDetalleReceta([FromBody] InsertDetalleRecetaModel req )
         {
             var objectResponse = Helper.GetStructResponse();
@@ -92,7 +92,7 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-        [HttpPut("Update DetalleReceta")]
+        [HttpPut("UpdateDetalleReceta")]
         public IActionResult UpdateDetalleReceta([FromBody] UpdateDetalleRecetaModel req )
         {
             var objectResponse = Helper.GetStructResponse();
@@ -114,7 +114,7 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-        [HttpDelete("DeleteDetalleReceta/{id}")]
+        [HttpDelete("DeleteDetalleReceta")]
         public IActionResult DeleteDetalleReceta([FromRoute] int id )
         {
             var objectResponse = Helper.GetStructResponse();
