@@ -14,6 +14,7 @@ using OfficeOpenXml.Style;
 using Microsoft.AspNetCore.Hosting;
 using reportesApi.Models.Compras;
 using System.Data; // Agrega esta línea
+using ClosedXML.Excel;
 
 
 namespace reportesApi.Controllers
@@ -70,28 +71,65 @@ namespace reportesApi.Controllers
         {
             var objectResponse = Helper.GetStructResponse();
 
-            try
-            {
-                objectResponse.StatusCode = (int)HttpStatusCode.OK;
-                objectResponse.success = true;
-                objectResponse.message = "DetalleEntradas cargados con exito";
-                var resultado = _DetalleEntradaService.GetDetalleEntrada(IdEntrada);
-               
-               
+    try
+    {
+        var resultado = _DetalleEntradaService.GetDetalleEntrada(IdEntrada);
 
-                // Llamando a la función y recibiendo los dos valores.
-               
-                 objectResponse.response = resultado;
-            }
-
-            catch (System.Exception ex)
-            {
-                objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
-                objectResponse.success = false;
-                objectResponse.message = ex.Message;
-            }
-
+        if (resultado == null || resultado.Count == 0)
+        {
+            objectResponse.StatusCode = (int)HttpStatusCode.NoContent;
+            objectResponse.success = false;
+            objectResponse.message = "No se encontraron detalles de la entrada.";
             return new JsonResult(objectResponse);
+        }
+
+        // Crear el archivo Excel
+        using (var workbook = new XLWorkbook())
+        {
+            var worksheet = workbook.Worksheets.Add("DetalleEntrada");
+
+            // Agregar encabezados
+            worksheet.Cell(1, 1).Value = "Id";
+            worksheet.Cell(1, 2).Value = "IdEntrada";
+            worksheet.Cell(1, 3).Value = "Insumo";
+            worksheet.Cell(1, 4).Value = "DescripcionInsumo";
+            worksheet.Cell(1, 5).Value = "Cantidad";
+            worksheet.Cell(1, 6).Value = "Costo";
+            worksheet.Cell(1, 7).Value = "Estatus";
+            worksheet.Cell(1, 5).Value = "UsuarioRegistra";
+
+            // Agregar datos
+            int row = 2; // Comenzamos en la segunda fila
+            foreach (var item in resultado)
+            {
+                worksheet.Cell(row, 1).Value = item.Id;
+                worksheet.Cell(row, 2).Value = item.IdEntrada;
+                worksheet.Cell(row, 3).Value = item.Insumo;
+                worksheet.Cell(row, 4).Value = item.DescripcionInsumo;
+                worksheet.Cell(row, 5).Value = item.Cantidad;
+                worksheet.Cell(row, 6).Value = item.Costo;
+                worksheet.Cell(row, 7).Value = item.Estatus;
+                worksheet.Cell(row, 8).Value = item.UsuarioRegistra;
+                row++;
+            }
+
+            // Guardar en un MemoryStream
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+                string excelName = $"DetalleEntrada-{System.DateTime.Now:yyyyMMddHHmmss}.xlsx";
+                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+        objectResponse.success = false;
+        objectResponse.message = ex.Message;
+        return new JsonResult(objectResponse);
+    }
         }
 
 
