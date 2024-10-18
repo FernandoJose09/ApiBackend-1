@@ -97,6 +97,12 @@ namespace reportesApi.Controllers
             worksheet.Cell(1, 6).Value = "Costo";
             worksheet.Cell(1, 7).Value = "Estatus";
             worksheet.Cell(1, 8).Value = "UsuarioRegistra";
+            
+            // Aplicar estilos (Color de fondo y color de texto)
+            var headerRange = worksheet.Range("A1:H1"); // Seleccionamos el rango de encabezados
+            headerRange.Style.Fill.BackgroundColor = XLColor.LightBlue; // Color de fondo azul claro
+            headerRange.Style.Font.FontColor = XLColor.White; // Texto blanco
+            headerRange.Style.Font.Bold = true; // Texto en negrita
 
             // Agregar datos
             int row = 2; // Comenzamos en la segunda fila
@@ -110,6 +116,14 @@ namespace reportesApi.Controllers
                 worksheet.Cell(row, 6).Value = item.Costo;
                 worksheet.Cell(row, 7).Value = item.Estatus;
                 worksheet.Cell(row, 8).Value = item.UsuarioRegistra;
+
+                var dataRange = worksheet.Range($"A{row}:H{row}");
+                if (row % 2 == 0) // Alternar color de fondo para filas pares
+                {
+                    dataRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+                }
+
+                
                 row++;
             }
 
