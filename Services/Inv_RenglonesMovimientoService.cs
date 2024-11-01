@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
+using System.Collections;
 namespace reportesApi.Services
 {
     public class Inv_RenglonesMovimientoService
@@ -27,27 +28,28 @@ namespace reportesApi.Services
              
         }
 
-        public List<GetInv_MovimientosModel> GetInv_Movimientos()
+        public List<GetInv_RenglonesMovimientoModel> GetInv_RenglonesMOvimiento()
         {
             ConexionDataAccess dac = new ConexionDataAccess(connection);
-            GetInv_MovimientosModel Inv_Movimientos = new GetInv_MovimientosModel();
+            GetInv_RenglonesMovimientoModel Inv_RenglonesMovimiento = new GetInv_RenglonesMovimientoModel();
 
-            List<GetInv_MovimientosModel> lista = new List<GetInv_MovimientosModel>();
+            List<GetInv_RenglonesMovimientoModel> lista = new List<GetInv_RenglonesMovimientoModel>();
             try
             {
                 parametros = new ArrayList();
-                DataSet ds = dac.Fill("sp_get_Movimientos", parametros);
+                DataSet ds = dac.Fill("sp_get_RenglonesMovimiento", parametros);
                 if (ds.Tables[0].Rows.Count > 0)
                 {
 
                   lista = ds.Tables[0].AsEnumerable()
                     .Select(dataRow => new GetInv_MovimientosModel {
                         Id = int.Parse(dataRow["Id"].ToString()),
-                        IdTipoMovimiento = int.Parse(dataRow["IdTipoMovimiento"].ToString()),
-                        IdAlmacen = int.Parse(dataRow["IdAlmacen"].ToString()),
-                        Fecha = dataRow["Fecha"].ToString(),
-                        Estatus = int.Parse(dataRow["Estatus"].ToString()),
-                        IdUsuario = int.Parse(dataRow["IdUsuario"].ToString()),
+                        IdMovimiento = int.Parse(dataRow["IdTipoMovimiento"].ToString()),
+                        Insumo = int.Parse(dataRow["IdAlmacen"].ToString()),
+                        Cantidad = dataRow["Fecha"].ToString(),
+                        Costo = int.Parse(dataRow["Estatus"].ToString()),
+                        Estatus = int.Parse(dataRow["IdUsuario"].ToString()),
+                        FechaRegistro = int.Parse(dataRow["IdUsuario"].ToString()),
 
                     }).ToList();
                 }
