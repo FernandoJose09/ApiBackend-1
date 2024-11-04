@@ -50,7 +50,7 @@ namespace reportesApi.Services
                         EntradaSalida = int.Parse(dataRow["EntradaSalida"].ToString()),
                         Estatus = int.Parse(dataRow["Estatus"].ToString()),
                         FechaRegistro = dataRow["FechaRegistro"].ToString(),
-                        Usuario_registra = int.Parse(dataRow["Usuario_registra"].ToString()),
+                        Usuario_registra = dataRow["Usuario_registra"].ToString(),
 
                     }).ToList();
                 }
@@ -76,7 +76,7 @@ namespace reportesApi.Services
              try 
             {
                 DataSet ds = dac.Fill("sp_insert_TiposMovimiento", parametros);
-                mensaje = ds.Tables[0].AsEnumerable().Select(dataRow => dataRow["mensaje"].ToString()).ToList()[0];
+                mensaje = ds.Tables[0].AsEnumerable().Select(dataRow => dataRow["MENSAJE"].ToString()).ToList()[0];
             }
             catch (Exception ex)
             {

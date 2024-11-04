@@ -18,11 +18,11 @@ namespace reportesApi.Controllers
 {
    
     [Route("api")]
-    public class Inv_MovimientosController: ControllerBase
+    public class RenglonesMovimientoController: ControllerBase
     {
    
-        private readonly Inv_MovimientosService _Inv_MovimientosService;
-        private readonly ILogger<Inv_MovimientosController> _logger;
+        private readonly Inv_RenglonesMovimientoService _Inv_RenglonesMovimientoService;
+        private readonly ILogger<RenglonesMovimientoController> _logger;
   
         private readonly IJwtAuthenticationService _authService;
         private readonly IWebHostEnvironment _hostingEnvironment;
@@ -30,8 +30,8 @@ namespace reportesApi.Controllers
 
         Encrypt enc = new Encrypt();
 
-        public Inv_MovimientosController(Inv_MovimientosService Inv_MovimientosService, ILogger<Inv_MovimientosController> logger, IJwtAuthenticationService authService) {
-            _Inv_MovimientosService = Inv_MovimientosService;
+        public RenglonesMovimientoController(Inv_RenglonesMovimientoService Inv_RenglonesMovimientoService, ILogger<RenglonesMovimientoController> logger, IJwtAuthenticationService authService) {
+            _Inv_RenglonesMovimientoService = Inv_RenglonesMovimientoService;
             _logger = logger;
        
             _authService = authService;
@@ -43,15 +43,15 @@ namespace reportesApi.Controllers
         }
 
 
-        [HttpPost("InsertInv_MovimientosModel")]
-        public IActionResult InsertInv_Movimientos([FromBody] InsertInv_MovimientosModel req )
+        [HttpPost("InsertInv_RenglonesMovimientos")]
+        public IActionResult InsertInv_RenglonesMovimeinto([FromBody] InsertInv_RenglonesMovimientoModel req )
         {
             var objectResponse = Helper.GetStructResponse();
             try
             {   
                 objectResponse.StatusCode = (int)HttpStatusCode.OK;
                 objectResponse.success = true;
-                objectResponse.message = _Inv_MovimientosService.InsertInv_Movimientos(req);
+                objectResponse.message = _Inv_RenglonesMovimientoService.InsertInv_RenglonesMovimiento(req);
 
             }
 
@@ -63,18 +63,46 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-      [HttpGet("GetInv_Movimientos")]
-        public IActionResult GetInv_Movimientos([FromQuery] int IdTipoMovimiento)
+    //   [HttpGet("GetInv_RenglonesMovimiento")]
+    //     public IActionResult GetInv_RenglonesMovimiento([FromQuery] int IdMovimiento)
+    //     {
+    //         var objectResponse = Helper.GetStructResponse();
+            
+
+    //         try
+    //         {
+    //             objectResponse.StatusCode = (int)HttpStatusCode.OK;
+    //             objectResponse.success = true;
+    //             objectResponse.message = "Existencia cargados exitosamente";
+    //             var resultado = _Inv_RenglonesMovimientoService.GetInv_RenglonesMovimiento(IdMovimiento);
+               
+               
+
+    //             // Llamando a la función y recibiendo los dos valores.
+               
+    //              objectResponse.response = resultado;
+    //         }
+
+    //         catch (System.Exception ex)
+    //         {
+    //           objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+    //           objectResponse.success = false;
+    //             objectResponse.message = ex.Message;
+    //         }
+
+    //         return new JsonResult(objectResponse);
+    //     }
+                 [HttpGet("GetInv_RenglonesMovimiento")]
+        public IActionResult GetDetalleReceta([FromQuery] int IdMovimiento)
         {
             var objectResponse = Helper.GetStructResponse();
-             
 
             try
             {
                 objectResponse.StatusCode = (int)HttpStatusCode.OK;
                 objectResponse.success = true;
-                objectResponse.message = "Existencia cargados exitosamente";
-               var resultado = _Inv_MovimientosService.GetInv_Movimientos(IdTipoMovimiento);
+                objectResponse.message = "Data cargado exitosamente";
+                var resultado = _Inv_RenglonesMovimientoService.GetInv_RenglonesMovimiento(IdMovimiento);
                
                
 
@@ -85,23 +113,24 @@ namespace reportesApi.Controllers
 
             catch (System.Exception ex)
             {
-              objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
-              objectResponse.success = false;
+                objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+                objectResponse.success = false;
                 objectResponse.message = ex.Message;
             }
 
             return new JsonResult(objectResponse);
         }
 
-        [HttpPut("UpdateInv_Movimientos")]
-        public IActionResult UpdateInv_Movimientos([FromBody] UpdateInv_MovimientosModel req )
+
+        [HttpPut("UpdateInv_RenglonesMovimiento")]
+        public IActionResult UpdateInv_RenglonesMovimiento([FromBody] UpdateInv_RenglonesMovimientoModel req )
         {
             var objectResponse = Helper.GetStructResponse();
             try
             {
                 objectResponse.StatusCode = (int)HttpStatusCode.OK;
                 objectResponse.success = true;
-                objectResponse.message = _Inv_MovimientosService.UpdateInv_Movimientos(req);
+                objectResponse.message = _Inv_RenglonesMovimientoService.UpdateInv_RenglonesMovimiento(req);
 
                 ;
 
@@ -115,7 +144,7 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-        [HttpDelete("DeleteInv_Movimientos/{id}")]
+        [HttpDelete("DeleteInv_RenglonesMovimiento/{id}")]
         public IActionResult DeleteInv_Movimientos([FromRoute] int id )
         {
             var objectResponse = Helper.GetStructResponse();
@@ -124,7 +153,7 @@ namespace reportesApi.Controllers
                 objectResponse.StatusCode = (int)HttpStatusCode.OK;
                 objectResponse.success = true;
                 objectResponse.message = "data cargado con exito";
-                _Inv_MovimientosService.DeleteInv_Movimientos(id);
+                _Inv_RenglonesMovimientoService.DeleteInv_RenglonesMovimiento(id);
 
             }
 

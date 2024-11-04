@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.Data;
 using System.Data.SqlClient;
 using reportesApi.DataContext;
 using reportesApi.Models;
@@ -10,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
-using System.Collections;
 namespace reportesApi.Services
 {
     public class Inv_RenglonesMovimientoService
@@ -28,79 +30,83 @@ namespace reportesApi.Services
              
         }
 
-        public List<GetInv_RenglonesMovimientoModel> GetInv_RenglonesMOvimiento()
+              public List<GetInv_RenglonesMovimientoModel> GetInv_RenglonesMovimiento(int IdMovimiento)
         {
+
             ConexionDataAccess dac = new ConexionDataAccess(connection);
-            GetInv_RenglonesMovimientoModel Inv_RenglonesMovimiento = new GetInv_RenglonesMovimientoModel();
+            parametros = new ArrayList();
+            parametros.Add(new SqlParameter { ParameterName = "@IdMovimiento", SqlDbType = SqlDbType.Int, Value = IdMovimiento });
 
             List<GetInv_RenglonesMovimientoModel> lista = new List<GetInv_RenglonesMovimientoModel>();
             try
             {
-                parametros = new ArrayList();
                 DataSet ds = dac.Fill("sp_get_RenglonesMovimiento", parametros);
                 if (ds.Tables[0].Rows.Count > 0)
                 {
 
                   lista = ds.Tables[0].AsEnumerable()
-                    .Select(dataRow => new GetInv_MovimientosModel {
-                        Id = int.Parse(dataRow["Id"].ToString()),
-                        IdMovimiento = int.Parse(dataRow["IdTipoMovimiento"].ToString()),
-                        Insumo = int.Parse(dataRow["IdAlmacen"].ToString()),
-                        Cantidad = dataRow["Fecha"].ToString(),
-                        Costo = int.Parse(dataRow["Estatus"].ToString()),
-                        Estatus = int.Parse(dataRow["IdUsuario"].ToString()),
-                        FechaRegistro = int.Parse(dataRow["IdUsuario"].ToString()),
-
+                    .Select(dataRow => new GetInv_RenglonesMovimientoModel {
+                          Id = int.Parse(dataRow["Id"].ToString()),
+                        IdMovimiento = int.Parse(dataRow["IdMovimiento"].ToString()),
+                        Insumo = dataRow["Insumo"].ToString(),
+                        DescripcionInsumo = dataRow["DescripcionInsumo"].ToString(),
+                        Cantidad = decimal.Parse(dataRow["Cantidad"].ToString()),
+                        Costo = decimal.Parse(dataRow["Costo"].ToString()),
+                        FechaRegistro = dataRow["FechaRegistro"].ToString(),
+                        Estatus = int.Parse(dataRow["Estatus"].ToString()),
+                        Usuario_registra = dataRow["Usuario_registra"].ToString(),
                     }).ToList();
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw ex;
             }
             return lista;
         }
 
-        public string InsertInv_Movimientos(InsertInv_MovimientosModel Inv_Movimientos)
+        public string InsertInv_RenglonesMovimiento(InsertInv_RenglonesMovimientoModel rm)
         {
-           
+           int IdMovimiento;
             ConexionDataAccess dac = new ConexionDataAccess(connection);
             parametros = new ArrayList();
             string mensaje;
 
-            parametros.Add(new SqlParameter { ParameterName = "@IdTipoMovimiento", SqlDbType = System.Data.SqlDbType.Int, Value = Inv_Movimientos.IdTipoMovimiento });
-            parametros.Add(new SqlParameter { ParameterName = "@IdAlmacen", SqlDbType = System.Data.SqlDbType.Int, Value = Inv_Movimientos.IdAlmacen});
-            parametros.Add(new SqlParameter { ParameterName = "@IdUsuario", SqlDbType = System.Data.SqlDbType.Int, Value = Inv_Movimientos.IdUsuario });
-
+            parametros.Add(new SqlParameter { ParameterName = "@IdMovimiento", SqlDbType = System.Data.SqlDbType.Int, Value = rm.IdMovimiento });
+            parametros.Add(new SqlParameter { ParameterName = "@Insumo", SqlDbType = System.Data.SqlDbType.VarChar, Value = rm.Insumo});
+            parametros.Add(new SqlParameter { ParameterName = "@Cantidad", SqlDbType = System.Data.SqlDbType.Decimal, Value = rm.Cantidad });
+            parametros.Add(new SqlParameter { ParameterName = "@Costo", SqlDbType = System.Data.SqlDbType.Decimal, Value = rm.Costo });
+            parametros.Add(new SqlParameter { ParameterName = "@Usuario_registra", SqlDbType = System.Data.SqlDbType.Int, Value = rm.Usuario_registra });
              try 
             {
-                DataSet ds = dac.Fill("sp_insert_Movimientos", parametros);
-                mensaje = ds.Tables[0].AsEnumerable().Select(dataRow => dataRow["mensaje"].ToString()).ToList()[0];
+                DataSet ds = dac.Fill("sp_insert_RenglonesMovimiento", parametros);
+                IdMovimiento = ds.Tables[0].AsEnumerable().Select(dataRow => int.Parse(dataRow["IdMovimiento"].ToString())).ToList()[0];
             }
             catch (Exception ex)
             {
-                
+                Console.WriteLine(ex.Message);
                 throw ex;
             }
-            return mensaje;
+            return IdMovimiento.ToString();
         }
 
-        public string UpdateInv_Movimientos(UpdateInv_MovimientosModel Inv_Movimientos)
+        public string UpdateInv_RenglonesMovimiento(UpdateInv_RenglonesMovimientoModel rm)
         {
             ConexionDataAccess dac = new ConexionDataAccess(connection);
             parametros = new ArrayList();
             string mensaje;
 
 
-            parametros.Add(new SqlParameter { ParameterName = "@Id", SqlDbType = System.Data.SqlDbType.Int, Value = Inv_Movimientos.Id });
-            parametros.Add(new SqlParameter { ParameterName = "@IdTipoMovimiento", SqlDbType = System.Data.SqlDbType.Int, Value = Inv_Movimientos.IdTipoMovimiento });
-            parametros.Add(new SqlParameter { ParameterName = "@IdAlmacen", SqlDbType = System.Data.SqlDbType.Int, Value = Inv_Movimientos.IdAlmacen});
-            parametros.Add(new SqlParameter { ParameterName = "@IdUsuario", SqlDbType = System.Data.SqlDbType.Int, Value = Inv_Movimientos.IdUsuario });
-
-
+            parametros.Add(new SqlParameter { ParameterName = "@Id", SqlDbType = System.Data.SqlDbType.Int, Value = rm.Id });
+             parametros.Add(new SqlParameter { ParameterName = "@IdMovimiento", SqlDbType = System.Data.SqlDbType.Int, Value = rm.IdMovimiento });
+            parametros.Add(new SqlParameter { ParameterName = "@Insumo", SqlDbType = System.Data.SqlDbType.VarChar, Value = rm.Insumo});
+            parametros.Add(new SqlParameter { ParameterName = "@Cantidad", SqlDbType = System.Data.SqlDbType.Decimal, Value = rm.Cantidad });
+            parametros.Add(new SqlParameter { ParameterName = "@Costo", SqlDbType = System.Data.SqlDbType.Decimal, Value = rm.Costo });
+            parametros.Add(new SqlParameter { ParameterName = "@Usuario_registra", SqlDbType = System.Data.SqlDbType.Int, Value = rm.Usuario_registra });
             try
             {
-                DataSet ds = dac.Fill("sp_update_Movimientos", parametros);
+                DataSet ds = dac.Fill("sp_update_RenglonesMovimiento", parametros);
                 mensaje = ds.Tables[0].AsEnumerable().Select(dataRow => dataRow["mensaje"].ToString()).ToList()[0];
             }
             catch (Exception ex)
@@ -111,7 +117,7 @@ namespace reportesApi.Services
             return mensaje;
         }
 
-      public void DeleteInv_Movimientos(int id)
+      public void DeleteInv_RenglonesMovimiento(int id)
         {
             ConexionDataAccess dac = new ConexionDataAccess(connection);
             parametros = new ArrayList();
@@ -120,7 +126,7 @@ namespace reportesApi.Services
 
             try
             {
-                dac.ExecuteNonQuery("sp_delete_Movimientos", parametros);
+                dac.ExecuteNonQuery("sp_delete_RenglonesMovimiento", parametros);
             }
             catch (Exception ex)
             {

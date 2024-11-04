@@ -39,7 +39,7 @@ namespace reportesApi.Services
             try
             {
                 parametros = new ArrayList();
-                DataSet ds = dac.Fill("sp_get_Existencias", parametros);
+                DataSet ds = dac.Fill("sp_get_existencias", parametros);
                 if (ds.Tables[0].Rows.Count > 0)
                 {
 
@@ -48,11 +48,12 @@ namespace reportesApi.Services
                         Id = int.Parse(dataRow["Id"].ToString()),
                         Fecha = dataRow["Fecha"].ToString(),
                         Insumo = dataRow["Insumo"].ToString(),
+                        DescripcionInsumo = dataRow["DescripcionInsumo"].ToString(),
+                        Cantidad = decimal.Parse(dataRow["Cantidad"].ToString()),
                         IdAlmacen = int.Parse(dataRow["IdAlmacen"].ToString()),
                         Estatus = int.Parse(dataRow["Estatus"].ToString()),
                         FechaRegistro = dataRow["FechaRegistro"].ToString(),
-                        Cantidad = decimal.Parse(dataRow["Cantidad"].ToString()),
-                        Usuario_registra = int.Parse(dataRow["Usuario_registra"].ToString()),
+                        Usuario_registra = dataRow["Usuario_registra"].ToString(),
 
                     }).ToList();
                 }
@@ -78,7 +79,7 @@ namespace reportesApi.Services
 
              try 
             {
-                DataSet ds = dac.Fill("sp_insert_Existencias", parametros);
+                DataSet ds = dac.Fill("sp_insert_existencias", parametros);
                 mensaje = ds.Tables[0].AsEnumerable().Select(dataRow => dataRow["mensaje"].ToString()).ToList()[0];
             }
             catch (Exception ex)
@@ -105,7 +106,7 @@ namespace reportesApi.Services
 
             try
             {
-                DataSet ds = dac.Fill("sp_update_Existencias", parametros);
+                DataSet ds = dac.Fill("sp_update_existencias", parametros);
                 mensaje = ds.Tables[0].AsEnumerable().Select(dataRow => dataRow["mensaje"].ToString()).ToList()[0];
             }
             catch (Exception ex)
@@ -125,7 +126,7 @@ namespace reportesApi.Services
 
             try
             {
-                dac.ExecuteNonQuery("sp_delete_Existencias", parametros);
+                dac.ExecuteNonQuery("sp_delete_existencias", parametros);
             }
             catch (Exception ex)
             {

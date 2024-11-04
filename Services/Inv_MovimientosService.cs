@@ -30,35 +30,35 @@ namespace reportesApi.Services
              
         }
 
-        public List<GetInv_RenglonesMovimientoModel> GetInv_RenglonesMovimiento()
+        public List<GetInv_MovimientosModel> GetInv_Movimientos(int IdTipoMovimiento)
         {
             ConexionDataAccess dac = new ConexionDataAccess(connection);
-            GetInv_RenglonesMovimientoModel Inv_RenglonesMovimiento = new GetInv_RenglonesMovimientoModel();
+            parametros = new ArrayList();
+            parametros.Add(new SqlParameter { ParameterName = "@IdTipoMovimiento", SqlDbType = SqlDbType.Int, Value = IdTipoMovimiento });
 
-            List<GetInv_RenglonesMovimientoModel> lista = new List<GetInv_RenglonesMovimientoModel>();
+            List<GetInv_MovimientosModel> lista = new List<GetInv_MovimientosModel>();
             try
             {
-                parametros = new ArrayList();
-                DataSet ds = dac.Fill("sp_get_RenglonesMovimiento", parametros);
+                
+                DataSet ds = dac.Fill("sp_get_Movimientos", parametros);
                 if (ds.Tables[0].Rows.Count > 0)
                 {
 
                   lista = ds.Tables[0].AsEnumerable()
-                    .Select(dataRow => new GetInv_RenglonesMovimientoModel {
+                    .Select(dataRow => new GetInv_MovimientosModel {
                         Id = int.Parse(dataRow["Id"].ToString()),
-                        IdMovimiento = int.Parse(dataRow["IdMovimiento"].ToString()),
-                        Insumo = dataRow["Insumo"].ToString(),
-                        Cantidad = decimal.Parse(dataRow["Cantidad"].ToString()),
-                        Costo = decimal.Parse(dataRow["Costo"].ToString()),
-                        Estatus = dataRow["Estatus"].ToString(),
-                        FechaRegistro = dataRow["Estatus"].ToString(),
-                        Usuario_registra = int.Parse(dataRow["IdUsuario"].ToString()),
+                        IdTipoMovimiento = int.Parse(dataRow["IdTipoMovimiento"].ToString()),
+                        IdAlmacen = int.Parse(dataRow["IdAlmacen"].ToString()),
+                        Fecha = dataRow["Fecha"].ToString(),
+                        Estatus = int.Parse(dataRow["Estatus"].ToString()),
+                        IdUsuario = int.Parse(dataRow["IdUsuario"].ToString()),
 
                     }).ToList();
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw ex;
             }
             return lista;
@@ -66,7 +66,7 @@ namespace reportesApi.Services
 
         public string InsertInv_Movimientos(InsertInv_MovimientosModel Inv_Movimientos)
         {
-           
+           int IdTipoMovimiento;
             ConexionDataAccess dac = new ConexionDataAccess(connection);
             parametros = new ArrayList();
             string mensaje;
@@ -78,14 +78,14 @@ namespace reportesApi.Services
              try 
             {
                 DataSet ds = dac.Fill("sp_insert_Movimientos", parametros);
-                mensaje = ds.Tables[0].AsEnumerable().Select(dataRow => dataRow["mensaje"].ToString()).ToList()[0];
+                IdTipoMovimiento = ds.Tables[0].AsEnumerable().Select(dataRow => int.Parse(dataRow["IdTipoMovimiento"].ToString())).ToList()[0];
             }
             catch (Exception ex)
             {
-                
+                Console.WriteLine(ex.Message);
                 throw ex;
             }
-            return mensaje;
+            return IdTipoMovimiento.ToString();
         }
 
         public string UpdateInv_Movimientos(UpdateInv_MovimientosModel Inv_Movimientos)
