@@ -46,7 +46,7 @@ namespace reportesApi.Services
 
                   lista = ds.Tables[0].AsEnumerable()
                     .Select(dataRow => new GetInv_RenglonesMovimientoModel {
-                          Id = int.Parse(dataRow["Id"].ToString()),
+                        Id = int.Parse(dataRow["Id"].ToString()),
                         IdMovimiento = int.Parse(dataRow["IdMovimiento"].ToString()),
                         Insumo = dataRow["Insumo"].ToString(),
                         DescripcionInsumo = dataRow["DescripcionInsumo"].ToString(),
@@ -55,6 +55,8 @@ namespace reportesApi.Services
                         FechaRegistro = dataRow["FechaRegistro"].ToString(),
                         Estatus = int.Parse(dataRow["Estatus"].ToString()),
                         Usuario_registra = dataRow["Usuario_registra"].ToString(),
+                        Fechainicial = dataRow["Fechainicial"].ToString(),
+                        Fechafinal = dataRow["Fechafinal"].ToString(),
                     }).ToList();
                 }
             }
@@ -99,7 +101,7 @@ namespace reportesApi.Services
 
 
             parametros.Add(new SqlParameter { ParameterName = "@Id", SqlDbType = System.Data.SqlDbType.Int, Value = rm.Id });
-             parametros.Add(new SqlParameter { ParameterName = "@IdMovimiento", SqlDbType = System.Data.SqlDbType.Int, Value = rm.IdMovimiento });
+            parametros.Add(new SqlParameter { ParameterName = "@IdMovimiento", SqlDbType = System.Data.SqlDbType.Int, Value = rm.IdMovimiento });
             parametros.Add(new SqlParameter { ParameterName = "@Insumo", SqlDbType = System.Data.SqlDbType.VarChar, Value = rm.Insumo});
             parametros.Add(new SqlParameter { ParameterName = "@Cantidad", SqlDbType = System.Data.SqlDbType.Decimal, Value = rm.Cantidad });
             parametros.Add(new SqlParameter { ParameterName = "@Costo", SqlDbType = System.Data.SqlDbType.Decimal, Value = rm.Costo });

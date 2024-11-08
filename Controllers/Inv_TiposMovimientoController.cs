@@ -35,8 +35,7 @@ namespace reportesApi.Controllers
             _logger = logger;
        
             _authService = authService;
-            // Configura la ruta base donde se almacenan los archivos.
-            // Asegúrate de ajustar la ruta según tu estructura de directorios.
+        
 
             
             

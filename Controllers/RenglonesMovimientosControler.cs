@@ -20,6 +20,7 @@ namespace reportesApi.Controllers
     [Route("api")]
     public class RenglonesMovimientoController: ControllerBase
     {
+
    
         private readonly Inv_RenglonesMovimientoService _Inv_RenglonesMovimientoService;
         private readonly ILogger<RenglonesMovimientoController> _logger;
@@ -63,35 +64,6 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-    //   [HttpGet("GetInv_RenglonesMovimiento")]
-    //     public IActionResult GetInv_RenglonesMovimiento([FromQuery] int IdMovimiento)
-    //     {
-    //         var objectResponse = Helper.GetStructResponse();
-            
-
-    //         try
-    //         {
-    //             objectResponse.StatusCode = (int)HttpStatusCode.OK;
-    //             objectResponse.success = true;
-    //             objectResponse.message = "Existencia cargados exitosamente";
-    //             var resultado = _Inv_RenglonesMovimientoService.GetInv_RenglonesMovimiento(IdMovimiento);
-               
-               
-
-    //             // Llamando a la función y recibiendo los dos valores.
-               
-    //              objectResponse.response = resultado;
-    //         }
-
-    //         catch (System.Exception ex)
-    //         {
-    //           objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
-    //           objectResponse.success = false;
-    //             objectResponse.message = ex.Message;
-    //         }
-
-    //         return new JsonResult(objectResponse);
-    //     }
                  [HttpGet("GetInv_RenglonesMovimiento")]
         public IActionResult GetDetalleReceta([FromQuery] int IdMovimiento)
         {
@@ -164,5 +136,70 @@ namespace reportesApi.Controllers
 
             return new JsonResult(objectResponse);
         }
+        [HttpGet("ExportInv_RenglonesMovimientoToExcel")]
+        public IActionResult ExportInv_RenglonesMovimientoToExcel([FromQuery] int IdMovimiento)
+        {
+            var objectResponse = Helper.GetStructResponse();
+            try
+            {
+        
+                var data = _Inv_RenglonesMovimientoService.GetInv_RenglonesMovimiento(IdMovimiento);
+
+        
+                using (var package = new ExcelPackage())
+                {
+                    var worksheet = package.Workbook.Worksheets.Add("RenglonesMovimiento");
+
+            
+                    worksheet.Cells[1, 1].Value = "Id";
+                    worksheet.Cells[1, 2].Value = "IdMovimiento";
+                    worksheet.Cells[1, 3].Value = "Insumo";
+                    worksheet.Cells[1, 4].Value = "DescripcionInsumo";
+                    worksheet.Cells[1, 5].Value = "Cantidad";
+                    worksheet.Cells[1, 6].Value = "Costo";
+                    worksheet.Cells[1, 7].Value = "Estatus";
+                    worksheet.Cells[1, 8].Value = "FechaRegistro";
+                    worksheet.Cells[1, 9].Value = "usuarioRegistra";
+
+            
+                    int row = 2;
+                    foreach (var item in data)
+                    {
+                        worksheet.Cells[row, 1].Value = item.Id;
+                        worksheet.Cells[row, 2].Value = item.IdMovimiento;       
+                        worksheet.Cells[row, 3].Value = item.Insumo;
+                        worksheet.Cells[row, 4].Value = item.DescripcionInsumo; 
+                        worksheet.Cells[row, 5].Value = item.Cantidad;  
+                        worksheet.Cells[row, 6].Value = item.Costo;
+                        worksheet.Cells[row, 7].Value = item.Estatus;
+                        worksheet.Cells[row, 8].Value = item.FechaRegistro;
+                        worksheet.Cells[row, 9].Value = item.Usuario_registra;   
+                        row++;
+                    }
+
+            
+                    using (var range = worksheet.Cells[1, 1, 1, 6])
+                    {
+                        range.Style.Font.Bold = true;
+                        range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightBlue);
+                    }
+
+            
+                    var excelBytes = package.GetAsByteArray();
+
+            
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RenglonesMovimiento.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+                objectResponse.success = false;
+                objectResponse.message = ex.Message;
+                return new JsonResult(objectResponse);
+            }
+        }
+
     }
 }
