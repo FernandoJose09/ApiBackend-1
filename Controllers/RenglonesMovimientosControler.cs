@@ -160,6 +160,7 @@ namespace reportesApi.Controllers
                     worksheet.Cells[1, 7].Value = "Estatus";
                     worksheet.Cells[1, 8].Value = "FechaRegistro";
                     worksheet.Cells[1, 9].Value = "usuarioRegistra";
+                    worksheet.Cells[1, 9].Value = "Fechainicial";
 
             
                     int row = 2;
@@ -174,6 +175,7 @@ namespace reportesApi.Controllers
                         worksheet.Cells[row, 7].Value = item.Estatus;
                         worksheet.Cells[row, 8].Value = item.FechaRegistro;
                         worksheet.Cells[row, 9].Value = item.Usuario_registra;   
+                        worksheet.Cells[row, 10].Value = item.Fechainicial;
                         row++;
                     }
 
