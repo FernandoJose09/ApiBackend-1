@@ -30,12 +30,17 @@ namespace reportesApi.Services
              
         }
 
-              public List<GetInv_RenglonesMovimientoModel> GetInv_RenglonesMovimiento(int IdMovimiento)
+              public List<GetInv_RenglonesMovimientoModel> GetInv_RenglonesMovimiento(DateTime? Fechainicial = null, DateTime? Fechafinal = null)
         {
 
             ConexionDataAccess dac = new ConexionDataAccess(connection);
             parametros = new ArrayList();
-            parametros.Add(new SqlParameter { ParameterName = "@IdMovimiento", SqlDbType = SqlDbType.Int, Value = IdMovimiento });
+            
+            parametros.Add(new SqlParameter { ParameterName = "@Fechainicial", SqlDbType = SqlDbType.Date, Value = Fechainicial });
+            parametros.Add(new SqlParameter { ParameterName = "@Fechafinal", SqlDbType = SqlDbType.Date, Value = Fechafinal });
+
+            
+            
 
             List<GetInv_RenglonesMovimientoModel> lista = new List<GetInv_RenglonesMovimientoModel>();
             try
@@ -55,8 +60,7 @@ namespace reportesApi.Services
                         FechaRegistro = dataRow["FechaRegistro"].ToString(),
                         Estatus = int.Parse(dataRow["Estatus"].ToString()),
                         Usuario_registra = dataRow["Usuario_registra"].ToString(),
-                        Fechainicial = dataRow["Fechainicial"].ToString(),
-                        Fechafinal = dataRow["Fechafinal"].ToString(),
+                        
                     }).ToList();
                 }
             }

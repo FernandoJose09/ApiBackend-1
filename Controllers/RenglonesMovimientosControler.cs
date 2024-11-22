@@ -64,34 +64,6 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-                 [HttpGet("GetInv_RenglonesMovimiento")]
-        public IActionResult GetDetalleReceta([FromQuery] int IdMovimiento)
-        {
-            var objectResponse = Helper.GetStructResponse();
-
-            try
-            {
-                objectResponse.StatusCode = (int)HttpStatusCode.OK;
-                objectResponse.success = true;
-                objectResponse.message = "Data cargado exitosamente";
-                var resultado = _Inv_RenglonesMovimientoService.GetInv_RenglonesMovimiento(IdMovimiento);
-               
-               
-
-                // Llamando a la función y recibiendo los dos valores.
-               
-                 objectResponse.response = resultado;
-            }
-
-            catch (System.Exception ex)
-            {
-                objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
-                objectResponse.success = false;
-                objectResponse.message = ex.Message;
-            }
-
-            return new JsonResult(objectResponse);
-        }
 
 
         [HttpPut("UpdateInv_RenglonesMovimiento")]
@@ -104,7 +76,7 @@ namespace reportesApi.Controllers
                 objectResponse.success = true;
                 objectResponse.message = _Inv_RenglonesMovimientoService.UpdateInv_RenglonesMovimiento(req);
 
-                ;
+                
 
             }
 
@@ -137,13 +109,22 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
         [HttpGet("ExportInv_RenglonesMovimientoToExcel")]
-        public IActionResult ExportInv_RenglonesMovimientoToExcel([FromQuery] int IdMovimiento)
+        public IActionResult ExportInv_RenglonesMovimientoToExcel([FromQuery] string? Fechainicial = null, 
+    [FromQuery] string? Fechafinal = null)
         {
             var objectResponse = Helper.GetStructResponse();
             try
             {
         
-                var data = _Inv_RenglonesMovimientoService.GetInv_RenglonesMovimiento(IdMovimiento);
+                   
+                DateTime? fechaInicialParsed = string.IsNullOrWhiteSpace(Fechainicial) 
+                ? (DateTime?)null 
+                : DateTime.ParseExact(Fechainicial, "yyyy-MM-dd", null);
+                DateTime? fechaFinalParsed = string.IsNullOrWhiteSpace(Fechafinal) 
+                ? (DateTime?)null 
+                : DateTime.ParseExact(Fechafinal, "yyyy-MM-dd", null);
+    
+                var data = _Inv_RenglonesMovimientoService.GetInv_RenglonesMovimiento(fechaInicialParsed, fechaFinalParsed);
 
         
                 using (var package = new ExcelPackage())
@@ -160,7 +141,6 @@ namespace reportesApi.Controllers
                     worksheet.Cells[1, 7].Value = "Estatus";
                     worksheet.Cells[1, 8].Value = "FechaRegistro";
                     worksheet.Cells[1, 9].Value = "usuarioRegistra";
-                    worksheet.Cells[1, 9].Value = "Fechainicial";
 
             
                     int row = 2;
@@ -175,12 +155,11 @@ namespace reportesApi.Controllers
                         worksheet.Cells[row, 7].Value = item.Estatus;
                         worksheet.Cells[row, 8].Value = item.FechaRegistro;
                         worksheet.Cells[row, 9].Value = item.Usuario_registra;   
-                        worksheet.Cells[row, 10].Value = item.Fechainicial;
                         row++;
                     }
 
             
-                    using (var range = worksheet.Cells[1, 1, 1, 6])
+                    using (var range = worksheet.Cells[1, 1, 1, 9])
                     {
                         range.Style.Font.Bold = true;
                         range.Style.Fill.PatternType = ExcelFillStyle.Solid;
