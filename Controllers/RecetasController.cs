@@ -64,16 +64,17 @@ namespace reportesApi.Controllers
         }
 
         [HttpGet("GetRecetas")]
-        public IActionResult GetRecetas()
+        public IActionResult GetRecetas2([FromQuery] int Id)
         {
             var objectResponse = Helper.GetStructResponse();
-            var resultado = _RecetasService.GetRecetas();
+            
 
             try
             {
                 objectResponse.StatusCode = (int)HttpStatusCode.OK;
                 objectResponse.success = true;
                 objectResponse.message = "data cargado con exito";
+                var resultado = _RecetasService.GetReceta2(Id);
 
 
                 // Llamando a la función y recibiendo los dos valores.
@@ -83,11 +84,80 @@ namespace reportesApi.Controllers
 
             catch (System.Exception ex)
             {
+                objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+                objectResponse.success = false;
                 objectResponse.message = ex.Message;
             }
 
             return new JsonResult(objectResponse);
         }
+        [HttpGet("GetRecetasFecha")]
+public IActionResult GetRecetasFecha([FromQuery] string? fechaInicio = null, [FromQuery] string? Fechafinal = null)
+{
+    var objectResponse = Helper.GetStructResponse();
+    try
+    {
+        // Conversión de fechas
+        DateTime? fechaInicioParsed = string.IsNullOrWhiteSpace(fechaInicio) 
+            ? (DateTime?)null 
+            : DateTime.ParseExact(fechaInicio, "yyyy-MM-dd", null);
+        DateTime? fechaFinalParsed = string.IsNullOrWhiteSpace(Fechafinal) 
+            ? (DateTime?)null 
+            : DateTime.ParseExact(Fechafinal, "yyyy-MM-dd", null);
+
+        // Obtener datos
+        var data = _RecetasService.GetRecetasFecha(fechaInicioParsed, fechaFinalParsed);
+
+        if (data == null || data.Count == 0)
+        {
+            return BadRequest("No se encontraron registros para las fechas proporcionadas.");
+        }
+
+        // Generar Excel
+        using (var package = new ExcelPackage())
+        {
+            var worksheet = package.Workbook.Worksheets.Add("Recetas");
+
+            // Encabezados
+            worksheet.Cells[1, 1].Value = "Id";
+            worksheet.Cells[1, 2].Value = "Nombre";
+            worksheet.Cells[1, 3].Value = "Estatus";
+            worksheet.Cells[1, 4].Value = "FechaCreacion";
+            worksheet.Cells[1, 5].Value = "Usuario_registra";
+
+            // Agregar datos
+            int row = 2;
+            foreach (var item in data)
+            {
+                worksheet.Cells[row, 1].Value = item.Id;
+                worksheet.Cells[row, 2].Value = item.Nombre;
+                worksheet.Cells[row, 3].Value = item.Estatus;
+                worksheet.Cells[row, 4].Value = item.FechaCreacion;
+                worksheet.Cells[row, 5].Value = item.UsuarioRegistra;
+                row++;
+            }
+
+            // Estilo de encabezado
+            using (var range = worksheet.Cells[1, 1, 1, 5])
+            {
+                range.Style.Font.Bold = true;
+                range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.DarkViolet);
+            }
+
+            // Retornar archivo Excel
+            var excelBytes = package.GetAsByteArray();
+            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RecetasFechas.xlsx");
+        }
+    }
+    catch (Exception ex)
+    {
+        objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+        objectResponse.success = false;
+        objectResponse.message = ex.Message;
+        return new JsonResult(objectResponse);
+    }
+}
 
         [HttpPut("UpdateRecetas")]
         public IActionResult UpdateRecetas([FromBody] UpdateRecetasModel req )
