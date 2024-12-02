@@ -63,34 +63,64 @@ namespace reportesApi.Controllers
             return new JsonResult(objectResponse);
         }
 
-        [HttpGet("GetRecetas")]
-        public IActionResult GetRecetas2([FromQuery] int Id)
+       [HttpGet("GetRecetasId")]
+public IActionResult GetRecetas2([FromQuery] int Id)
+{
+    try
+    {
+        // Obtener las recetas
+        var recetas = _RecetasService.GetReceta2(Id);
+        
+        // Verificar si hay recetas
+        if (recetas == null || recetas.Count == 0)
         {
-            var objectResponse = Helper.GetStructResponse();
-            
-
-            try
-            {
-                objectResponse.StatusCode = (int)HttpStatusCode.OK;
-                objectResponse.success = true;
-                objectResponse.message = "data cargado con exito";
-                var resultado = _RecetasService.GetReceta2(Id);
-
-
-                // Llamando a la función y recibiendo los dos valores.
-                
-                 objectResponse.response = resultado;
-            }
-
-            catch (System.Exception ex)
-            {
-                objectResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
-                objectResponse.success = false;
-                objectResponse.message = ex.Message;
-            }
-
-            return new JsonResult(objectResponse);
+            return NotFound("No se encontraron recetas.");
         }
+
+        // Crear un nuevo archivo Excel
+        using (var package = new ExcelPackage())
+        {
+            // Crear una hoja de trabajo en el archivo Excel
+            var worksheet = package.Workbook.Worksheets.Add("RecetasId");
+
+            // Crear el encabezado
+            worksheet.Cells[1, 1].Value = "ID";
+            worksheet.Cells[1, 2].Value = "Nombre";
+            worksheet.Cells[1, 3].Value = "Estatus";
+            worksheet.Cells[1, 4].Value = "Fecha de Creación";
+            worksheet.Cells[1, 5].Value = "Usuario Registra";
+
+
+            worksheet.Cells[1, 1, 1, 5].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            worksheet.Cells[1, 1, 1, 5].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.DarkGray);
+
+            // Rellenar los datos
+            int row = 2; // Comenzar desde la fila 2 para los datos
+            foreach (var receta in recetas)
+            {
+                worksheet.Cells[row, 1].Value = receta.Id;
+                worksheet.Cells[row, 2].Value = receta.Nombre;
+                worksheet.Cells[row, 3].Value = receta.Estatus;
+                worksheet.Cells[row, 4].Value = receta.FechaCreacion;
+                worksheet.Cells[row, 5].Value = receta.UsuarioRegistra;
+                row++;
+            }
+
+            // Establecer un nombre para el archivo Excel
+            var file = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "RecetasId.xlsx"));
+
+            // Guardar el archivo Excel en el disco
+            package.SaveAs(file);
+
+            // Devolver el archivo como una respuesta de descarga
+            return File(file.OpenRead(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RecetasReport.xlsx");
+        }
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, $"Error al generar el reporte: {ex.Message}");
+    }
+}
         [HttpGet("GetRecetasFecha")]
 public IActionResult GetRecetasFecha([FromQuery] string? fechaInicio = null, [FromQuery] string? Fechafinal = null)
 {
